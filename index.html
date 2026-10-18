@@ -4,13 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>🥌 curling · virtual board</title>
-  
-<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-<link rel="manifest" href="site.webmanifest">
-
-
   <style>
     * {
       box-sizing: border-box;
@@ -50,152 +43,6 @@
       flex-direction: column;
       align-items: center;
       overflow: hidden;
-    }
-
-    /* ---------- TOP ACTION BUTTONS ---------- */
-    .top-actions {
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin-bottom: 8px;
-      flex-shrink: 0;
-    }
-
-    .action-btn {
-      flex: 1;
-      max-width: 200px;
-      border: none;
-      border-radius: 40px;
-      padding: 8px 14px;
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 0.2px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      transition: background 0.15s, transform 0.05s;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-    }
-
-    .action-btn:active {
-      transform: scale(0.97);
-    }
-
-    .action-btn.reset {
-      background: #eef2f6;
-      color: #334155;
-    }
-    .action-btn.reset:active { background: #d9e1e8; }
-
-    .action-btn.share {
-      background: #1e293b;
-      color: #ffffff;
-    }
-    .action-btn.share:active { background: #0f172a; }
-
-    /* ---------- TOP CONTROLS (end selector + editor) ---------- */
-    .top-controls {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-      margin-bottom: 8px;
-      flex-shrink: 0;
-    }
-
-    .end-nav {
-      display: flex;
-      justify-content: center;
-      gap: 4px;
-      flex-wrap: wrap;
-      width: 100%;
-    }
-
-    .end-nav button {
-      border: none;
-      background: #eef2f6;
-      color: #334155;
-      font-size: 10px;
-      font-weight: 600;
-      padding: 4px 7px;
-      border-radius: 20px;
-      cursor: pointer;
-      transition: background 0.15s;
-      min-width: 26px;
-    }
-
-    .end-nav button:active { background: #d9e1e8; }
-    .end-nav button.active { background: #1e293b; color: #ffffff; }
-
-    .end-editor {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 14px;
-      width: 100%;
-      padding: 5px 10px;
-      background: #f8fafd;
-      border-radius: 40px;
-      box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.03);
-      flex-wrap: wrap;
-    }
-
-    .edit-group {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .edit-group .team-chip {
-      width: 22px;
-      height: 22px;
-      border-radius: 7px;
-    }
-
-    .team-chip.red { background: #d32f2f; }
-    .team-chip.yellow { background: #f9a825; }
-
-    .edit-btn {
-      width: 26px;
-      height: 26px;
-      border-radius: 26px;
-      border: none;
-      background: #eef2f6;
-      font-size: 17px;
-      font-weight: 600;
-      line-height: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #1e293b;
-      cursor: pointer;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-    }
-
-    .edit-btn:active { background: #d9e1e8; }
-
-    .edit-value {
-      min-width: 22px;
-      text-align: center;
-      font-weight: 700;
-      font-size: 16px;
-      color: #0f172a;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .end-label {
-      font-size: 11px;
-      font-weight: 700;
-      color: #475569;
-      letter-spacing: 0.3px;
-      padding: 3px 8px;
-      background: #eef2f6;
-      border-radius: 20px;
-      white-space: nowrap;
     }
 
     /* ---------- SCOREBOARD TABLE ---------- */
@@ -327,6 +174,152 @@
 
     canvas:active { cursor: grabbing; }
 
+    /* ---------- BOTTOM CONTROLS: editor + end nav ---------- */
+    .bottom-controls {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+      flex-shrink: 0;
+    }
+
+    .end-editor {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+      padding: 5px 10px;
+      background: #f8fafd;
+      border-radius: 40px;
+      box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.03);
+      flex-wrap: wrap;
+    }
+
+    .edit-group {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .edit-group .team-chip {
+      width: 22px;
+      height: 22px;
+      border-radius: 7px;
+    }
+
+    .team-chip.red { background: #d32f2f; }
+    .team-chip.yellow { background: #f9a825; }
+
+    .edit-btn {
+      width: 26px;
+      height: 26px;
+      border-radius: 26px;
+      border: none;
+      background: #eef2f6;
+      font-size: 17px;
+      font-weight: 600;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #1e293b;
+      cursor: pointer;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+
+    .edit-btn:active { background: #d9e1e8; }
+
+    .edit-value {
+      min-width: 22px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 16px;
+      color: #0f172a;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .end-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #475569;
+      letter-spacing: 0.3px;
+      padding: 3px 8px;
+      background: #eef2f6;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+
+    .end-nav {
+      display: flex;
+      justify-content: center;
+      gap: 4px;
+      flex-wrap: wrap;
+      width: 100%;
+    }
+
+    .end-nav button {
+      border: none;
+      background: #eef2f6;
+      color: #334155;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 4px 7px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: background 0.15s;
+      min-width: 26px;
+    }
+
+    .end-nav button:active { background: #d9e1e8; }
+    .end-nav button.active { background: #1e293b; color: #ffffff; }
+
+    /* ---------- BOTTOM ACTION BUTTONS ---------- */
+    .bottom-actions {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 8px;
+      flex-shrink: 0;
+    }
+
+    .action-btn {
+      flex: 1;
+      max-width: 200px;
+      border: none;
+      border-radius: 40px;
+      padding: 9px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: background 0.15s, transform 0.05s;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+
+    .action-btn:active {
+      transform: scale(0.97);
+    }
+
+    .action-btn.reset {
+      background: #eef2f6;
+      color: #334155;
+    }
+    .action-btn.reset:active { background: #d9e1e8; }
+
+    .action-btn.share {
+      background: #1e293b;
+      color: #ffffff;
+    }
+    .action-btn.share:active { background: #0f172a; }
+
     /* toast */
     .toast {
       position: fixed;
@@ -354,32 +347,6 @@
 </head>
 <body>
 <div class="app">
-
-  <!-- TOP ACTION BUTTONS (Russian) -->
-  <div class="top-actions">
-    <button class="action-btn reset" id="resetBtn">↺ Сбросить</button>
-    <button class="action-btn share" id="shareBtn">📤 Поделиться</button>
-  </div>
-
-  <!-- TOP CONTROLS: end selector + score editor -->
-  <div class="top-controls">
-    <div class="end-nav" id="endNav"></div>
-    <div class="end-editor" id="endEditor">
-      <div class="edit-group">
-        <span class="team-chip red"></span>
-        <button class="edit-btn" data-team="red" data-delta="-1">−</button>
-        <span class="edit-value" id="editRedVal">0</span>
-        <button class="edit-btn" data-team="red" data-delta="1">+</button>
-      </div>
-      <span class="end-label" id="endLabel">End 1</span>
-      <div class="edit-group">
-        <span class="team-chip yellow"></span>
-        <button class="edit-btn" data-team="yellow" data-delta="-1">−</button>
-        <span class="edit-value" id="editYellowVal">0</span>
-        <button class="edit-btn" data-team="yellow" data-delta="1">+</button>
-      </div>
-    </div>
-  </div>
 
   <!-- SCOREBOARD -->
   <div class="scoreboard">
@@ -421,6 +388,32 @@
   <!-- CANVAS BOARD -->
   <div class="board-wrapper" id="boardWrapper">
     <canvas id="curlingCanvas" width="520" height="1000"></canvas>
+  </div>
+
+  <!-- BOTTOM CONTROLS: score editor + end selector -->
+  <div class="bottom-controls">
+    <div class="end-editor" id="endEditor">
+      <div class="edit-group">
+        <span class="team-chip red"></span>
+        <button class="edit-btn" data-team="red" data-delta="-1">−</button>
+        <span class="edit-value" id="editRedVal">0</span>
+        <button class="edit-btn" data-team="red" data-delta="1">+</button>
+      </div>
+      <span class="end-label" id="endLabel">End 1</span>
+      <div class="edit-group">
+        <span class="team-chip yellow"></span>
+        <button class="edit-btn" data-team="yellow" data-delta="-1">−</button>
+        <span class="edit-value" id="editYellowVal">0</span>
+        <button class="edit-btn" data-team="yellow" data-delta="1">+</button>
+      </div>
+    </div>
+    <div class="end-nav" id="endNav"></div>
+  </div>
+
+  <!-- BOTTOM ACTION BUTTONS -->
+  <div class="bottom-actions">
+    <button class="action-btn reset" id="resetBtn">↺ Сбросить</button>
+    <button class="action-btn share" id="shareBtn">📤 Поделиться</button>
   </div>
 </div>
 
