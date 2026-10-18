@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>🥌 curling · virtual board</title>
+  
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="manifest" href="site.webmanifest">
+
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      background: #f0f3f7;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      padding: 6px;
+      height: 100vh;
+      height: 100dvh;
+    }
+
+    .app {
+      background: #ffffff;
+      border-radius: 24px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+      padding: 10px 10px 8px;
+      width: 100%;
+      max-width: 560px;
+      height: 100%;
+      max-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    /* ---------- TOP ACTION BUTTONS ---------- */
+    .top-actions {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 8px;
+      flex-shrink: 0;
+    }
+
+    .action-btn {
+      flex: 1;
+      max-width: 200px;
+      border: none;
+      border-radius: 40px;
+      padding: 8px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: background 0.15s, transform 0.05s;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+
+    .action-btn:active {
+      transform: scale(0.97);
+    }
+
+    .action-btn.reset {
+      background: #eef2f6;
+      color: #334155;
+    }
+    .action-btn.reset:active { background: #d9e1e8; }
+
+    .action-btn.share {
+      background: #1e293b;
+      color: #ffffff;
+    }
+    .action-btn.share:active { background: #0f172a; }
+
+    /* ---------- TOP CONTROLS (end selector + editor) ---------- */
+    .top-controls {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+      flex-shrink: 0;
+    }
+
+    .end-nav {
+      display: flex;
+      justify-content: center;
+      gap: 4px;
+      flex-wrap: wrap;
+      width: 100%;
+    }
+
+    .end-nav button {
+      border: none;
+      background: #eef2f6;
+      color: #334155;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 4px 7px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: background 0.15s;
+      min-width: 26px;
+    }
+
+    .end-nav button:active { background: #d9e1e8; }
+    .end-nav button.active { background: #1e293b; color: #ffffff; }
+
+    .end-editor {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+      padding: 5px 10px;
+      background: #f8fafd;
+      border-radius: 40px;
+      box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.03);
+      flex-wrap: wrap;
+    }
+
+    .edit-group {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .edit-group .team-chip {
+      width: 22px;
+      height: 22px;
+      border-radius: 7px;
+    }
+
+    .team-chip.red { background: #d32f2f; }
+    .team-chip.yellow { background: #f9a825; }
+
+    .edit-btn {
+      width: 26px;
+      height: 26px;
+      border-radius: 26px;
+      border: none;
+      background: #eef2f6;
+      font-size: 17px;
+      font-weight: 600;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #1e293b;
+      cursor: pointer;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+
+    .edit-btn:active { background: #d9e1e8; }
+
+    .edit-value {
+      min-width: 22px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 16px;
+      color: #0f172a;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .end-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #475569;
+      letter-spacing: 0.3px;
+      padding: 3px 8px;
+      background: #eef2f6;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+
+    /* ---------- SCOREBOARD TABLE ---------- */
+    .scoreboard {
+      width: 100%;
+      margin-bottom: 8px;
+      padding: 0 2px;
+      flex-shrink: 0;
+    }
+
+    .score-scroll {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      border-radius: 12px;
+    }
+
+    .score-scroll::-webkit-scrollbar { height: 3px; }
+    .score-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+
+    .score-table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      font-variant-numeric: tabular-nums;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+      background: #ffffff;
+    }
+
+    .score-table th,
+    .score-table td {
+      text-align: center;
+      padding: 4px 1px;
+      font-size: 11px;
+      border: 1px solid #e6ebf1;
+      line-height: 1.2;
+    }
+
+    .score-table thead th {
+      background: #f1f5f9;
+      font-weight: 700;
+      color: #334155;
+      font-size: 10px;
+      letter-spacing: 0.2px;
+    }
+
+    .score-table thead th.corner {
+      background: #e9eef5;
+      width: 36px;
+    }
+
+    .score-table tbody td {
+      font-size: 13px;
+      font-weight: 600;
+      color: #0f172a;
+      height: 26px;
+    }
+
+    .score-table tbody td.team-color {
+      width: 36px;
+      padding: 0;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .team-color-inner {
+      width: 100%;
+      height: 100%;
+      min-height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: filter 0.15s;
+    }
+
+    .team-color-inner:active {
+      filter: brightness(0.85);
+    }
+
+    .team-color-inner.red { background: #d32f2f; }
+    .team-color-inner.yellow { background: #f9a825; }
+
+    .hammer-icon {
+      font-size: 16px;
+      line-height: 1;
+      filter: drop-shadow(0 1px 1px rgba(0,0,0,0.35));
+      pointer-events: none;
+    }
+
+    .score-table tbody td.red-score {
+      background: #fff6f2;
+      color: #b91c1c;
+      width: 38px;
+    }
+
+    .score-table tbody td.yellow-score {
+      background: #fefde7;
+      color: #a16207;
+      width: 38px;
+    }
+
+    /* ---------- CURLING BOARD ---------- */
+    .board-wrapper {
+      width: 100%;
+      flex: 1 1 auto;
+      min-height: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #fcfdff;
+      border-radius: 20px;
+      padding: 4px 0;
+      overflow: hidden;
+    }
+
+    canvas {
+      display: block;
+      max-width: 100%;
+      max-height: 100%;
+      width: auto;
+      height: auto;
+      border-radius: 14px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+      touch-action: none;
+      cursor: grab;
+    }
+
+    canvas:active { cursor: grabbing; }
+
+    /* toast */
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #1e293b;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 10px 18px;
+      border-radius: 40px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s, transform 0.2s;
+      z-index: 999;
+      white-space: nowrap;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- TOP ACTION BUTTONS (Russian) -->
+  <div class="top-actions">
+    <button class="action-btn reset" id="resetBtn">↺ Сбросить</button>
+    <button class="action-btn share" id="shareBtn">📤 Поделиться</button>
+  </div>
+
+  <!-- TOP CONTROLS: end selector + score editor -->
+  <div class="top-controls">
+    <div class="end-nav" id="endNav"></div>
+    <div class="end-editor" id="endEditor">
+      <div class="edit-group">
+        <span class="team-chip red"></span>
+        <button class="edit-btn" data-team="red" data-delta="-1">−</button>
+        <span class="edit-value" id="editRedVal">0</span>
+        <button class="edit-btn" data-team="red" data-delta="1">+</button>
+      </div>
+      <span class="end-label" id="endLabel">End 1</span>
+      <div class="edit-group">
+        <span class="team-chip yellow"></span>
+        <button class="edit-btn" data-team="yellow" data-delta="-1">−</button>
+        <span class="edit-value" id="editYellowVal">0</span>
+        <button class="edit-btn" data-team="yellow" data-delta="1">+</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCOREBOARD -->
+  <div class="scoreboard">
+    <div class="score-scroll">
+      <table class="score-table" id="scoreTable">
+        <thead>
+          <tr>
+            <th class="corner"></th>
+            <th>1</th><th>2</th><th>3</th><th>4</th><th>5</th>
+            <th>6</th><th>7</th><th>8</th><th>9</th><th>10</th>
+            <th>EE</th>
+            <th style="width:34px;">T</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr id="rowRed">
+            <td class="team-color" id="redHammerCell" title="Tap to set hammer for RED">
+              <span class="team-color-inner red" id="redColorInner"></span>
+            </td>
+            <td class="red-score"></td><td class="red-score"></td><td class="red-score"></td><td class="red-score"></td><td class="red-score"></td>
+            <td class="red-score"></td><td class="red-score"></td><td class="red-score"></td><td class="red-score"></td><td class="red-score"></td>
+            <td class="red-score"></td>
+            <td class="red-score" style="background:#fde8e4; font-weight:800;"></td>
+          </tr>
+          <tr id="rowYellow">
+            <td class="team-color" id="yellowHammerCell" title="Tap to set hammer for YELLOW">
+              <span class="team-color-inner yellow" id="yellowColorInner"></span>
+            </td>
+            <td class="yellow-score"></td><td class="yellow-score"></td><td class="yellow-score"></td><td class="yellow-score"></td><td class="yellow-score"></td>
+            <td class="yellow-score"></td><td class="yellow-score"></td><td class="yellow-score"></td><td class="yellow-score"></td><td class="yellow-score"></td>
+            <td class="yellow-score"></td>
+            <td class="yellow-score" style="background:#fdf6d8; font-weight:800;"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- CANVAS BOARD -->
+  <div class="board-wrapper" id="boardWrapper">
+    <canvas id="curlingCanvas" width="520" height="1000"></canvas>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+  (function() {
+    // ==================== SCORE LOGIC ====================
+    const ENDS = 10;
+    const TOTAL_COLUMNS = ENDS + 1;
+
+    let redScores = new Array(TOTAL_COLUMNS).fill(null);
+    let yellowScores = new Array(TOTAL_COLUMNS).fill(null);
+
+    let selectedEnd = 0;
+    let hammerOwner = null;
+
+    const rowRed = document.getElementById('rowRed');
+    const rowYellow = document.getElementById('rowYellow');
+    const endNav = document.getElementById('endNav');
+    const endLabel = document.getElementById('endLabel');
+    const editRedVal = document.getElementById('editRedVal');
+    const editYellowVal = document.getElementById('editYellowVal');
+
+    const redColorInner = document.getElementById('redColorInner');
+    const yellowColorInner = document.getElementById('yellowColorInner');
+    const redHammerCell = document.getElementById('redHammerCell');
+    const yellowHammerCell = document.getElementById('yellowHammerCell');
+
+    const resetBtn = document.getElementById('resetBtn');
+    const shareBtn = document.getElementById('shareBtn');
+    const toastEl = document.getElementById('toast');
+
+    // ----- TOAST -----
+    let toastTimer = null;
+    function showToast(msg) {
+      toastEl.textContent = msg;
+      toastEl.classList.add('show');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toastEl.classList.remove('show');
+      }, 1800);
+    }
+
+    // ----- HAMMER -----
+    function renderHammer() {
+      redColorInner.innerHTML = hammerOwner === 'red' ? '<span class="hammer-icon">🔨</span>' : '';
+      yellowColorInner.innerHTML = hammerOwner === 'yellow' ? '<span class="hammer-icon">🔨</span>' : '';
+    }
+
+    function toggleHammer(team) {
+      if (hammerOwner === team) {
+        hammerOwner = null;
+      } else {
+        hammerOwner = team;
+      }
+      renderHammer();
+    }
+
+    redHammerCell.addEventListener('click', () => toggleHammer('red'));
+    yellowHammerCell.addEventListener('click', () => toggleHammer('yellow'));
+
+    // ----- TABLE -----
+    function displayScore(value) {
+      if (value === null) return '';
+      return String(value);
+    }
+
+    function renderTableScores() {
+      const redCells = rowRed.querySelectorAll('td.red-score');
+      const yellowCells = rowYellow.querySelectorAll('td.yellow-score');
+
+      for (let i = 0; i < TOTAL_COLUMNS; i++) {
+        redCells[i].textContent = displayScore(redScores[i]);
+        yellowCells[i].textContent = displayScore(yellowScores[i]);
+      }
+
+      const redTotal = redScores.reduce((a, b) => a + (b === null ? 0 : b), 0);
+      const yellowTotal = yellowScores.reduce((a, b) => a + (b === null ? 0 : b), 0);
+      redCells[TOTAL_COLUMNS].textContent = redTotal > 0 ? redTotal : '';
+      yellowCells[TOTAL_COLUMNS].textContent = yellowTotal > 0 ? yellowTotal : '';
+    }
+
+    function renderEditor() {
+      endLabel.textContent = selectedEnd < ENDS ? `End ${selectedEnd + 1}` : 'EE';
+      const r = redScores[selectedEnd];
+      const y = yellowScores[selectedEnd];
+      editRedVal.textContent = r === null ? '–' : r;
+      editYellowVal.textContent = y === null ? '–' : y;
+    }
+
+    function renderEndNav() {
+      endNav.innerHTML = '';
+      for (let i = 0; i < TOTAL_COLUMNS; i++) {
+        const btn = document.createElement('button');
+        btn.textContent = i < ENDS ? (i + 1) : 'EE';
+        btn.dataset.endIndex = i;
+        if (i === selectedEnd) btn.classList.add('active');
+        btn.addEventListener('click', () => {
+          selectedEnd = i;
+          renderEndNav();
+          renderEditor();
+        });
+        endNav.appendChild(btn);
+      }
+    }
+
+    document.querySelectorAll('.end-editor .edit-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const team = btn.dataset.team;
+        const delta = parseInt(btn.dataset.delta, 10);
+        if (team === 'red') {
+          if (redScores[selectedEnd] === null) {
+            redScores[selectedEnd] = 0;
+          } else {
+            redScores[selectedEnd] = Math.max(0, redScores[selectedEnd] + delta);
+          }
+          editRedVal.textContent = redScores[selectedEnd];
+        } else {
+          if (yellowScores[selectedEnd] === null) {
+            yellowScores[selectedEnd] = 0;
+          } else {
+            yellowScores[selectedEnd] = Math.max(0, yellowScores[selectedEnd] + delta);
+          }
+          editYellowVal.textContent = yellowScores[selectedEnd];
+        }
+        renderTableScores();
+      });
+    });
+
+    // ==================== CURLING BOARD ====================
+    const canvas = document.getElementById('curlingCanvas');
+    const ctx = canvas.getContext('2d');
+    const boardWrapper = document.getElementById('boardWrapper');
+
+    const BOARD_W = 5000;
+    const BOARD_H = 8500;
+    const EXTRA_TOP = 300;
+    const EXTRA_BOTTOM = 200;
+    const HOUSE_CENTER_Y_FROM_TOP = 1829;
+    const RED_LINE_Y_FROM_TOP = 8230;
+
+    const R1 = 152;
+    const R2 = 610;
+    const R3 = 1219;
+    const R4 = 1829;
+
+    const STONE_DIAMETER_CM = 292;
+    const STONE_RADIUS_CM = STONE_DIAMETER_CM / 2;
+
+    const RED_COLOR = '#d32f2f';
+    const YELLOW_COLOR = '#f9a825';
+    const HOUSE_BLUE = '#1e88e5';
+    const HOUSE_RED = '#d32f2f';
+    const BLACK_LINE = '#000000';
+
+    const TOTAL_WIDTH_CM = BOARD_W;
+    const TOTAL_HEIGHT_CM = EXTRA_TOP + BOARD_H + EXTRA_BOTTOM;
+
+    const ASPECT = TOTAL_WIDTH_CM / TOTAL_HEIGHT_CM;
+
+    let CANVAS_W = 520;
+    let CANVAS_H = Math.round(520 / ASPECT);
+
+    const PLAY_LEFT = 0;
+    const PLAY_RIGHT = BOARD_W;
+    const PLAY_TOP = EXTRA_TOP;
+    const PLAY_BOTTOM = EXTRA_TOP + BOARD_H;
+    const FULL_BOTTOM = EXTRA_TOP + BOARD_H + EXTRA_BOTTOM;
+
+    const HOUSE_CX = BOARD_W / 2;
+    const HOUSE_CY = PLAY_TOP + HOUSE_CENTER_Y_FROM_TOP;
+
+    const RED_LINE_Y = PLAY_TOP + RED_LINE_Y_FROM_TOP;
+
+    // stones
+    const initialStoneDefs = [];
+    const stones = [];
+
+    function createStone(x, y, color) {
+      return { x, y, color };
+    }
+
+    function buildInitialStones() {
+      initialStoneDefs.length = 0;
+      const bottomY = FULL_BOTTOM - STONE_RADIUS_CM;
+
+      const redSpacing = (2200 - 300) / 7;
+      for (let i = 0; i < 8; i++) {
+        initialStoneDefs.push({ x: 300 + i * redSpacing, y: bottomY, color: RED_COLOR });
+      }
+
+      const yellowSpacing = (4700 - 2800) / 7;
+      for (let i = 0; i < 8; i++) {
+        initialStoneDefs.push({ x: 2800 + i * yellowSpacing, y: bottomY, color: YELLOW_COLOR });
+      }
+    }
+
+    function resetStonesToInitial() {
+      stones.length = 0;
+      initialStoneDefs.forEach(def => {
+        stones.push(createStone(def.x, def.y, def.color));
+      });
+    }
+
+    buildInitialStones();
+    resetStonesToInitial();
+
+    // layout
+    let scale = 1;
+    let offsetX = 0;
+    let offsetY = 0;
+    const MARGIN_CANVAS = 8;
+
+    function resizeCanvas() {
+      const wrapperRect = boardWrapper.getBoundingClientRect();
+      const availW = Math.max(80, wrapperRect.width - 8);
+      const availH = Math.max(80, wrapperRect.height - 8);
+
+      let cssW = availW;
+      let cssH = cssW / ASPECT;
+      if (cssH > availH) {
+        cssH = availH;
+        cssW = cssH * ASPECT;
+      }
+
+      canvas.style.width = cssW + 'px';
+      canvas.style.height = cssH + 'px';
+
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      CANVAS_W = Math.round(cssW * dpr);
+      CANVAS_H = Math.round(cssH * dpr);
+      canvas.width = CANVAS_W;
+      canvas.height = CANVAS_H;
+
+      const drawableW = CANVAS_W - 2 * MARGIN_CANVAS;
+      const drawableH = CANVAS_H - 2 * MARGIN_CANVAS;
+
+      const scaleX = drawableW / TOTAL_WIDTH_CM;
+      const scaleY = drawableH / TOTAL_HEIGHT_CM;
+      scale = Math.min(scaleX, scaleY);
+
+      const drawW = TOTAL_WIDTH_CM * scale;
+      const drawH = TOTAL_HEIGHT_CM * scale;
+      offsetX = (CANVAS_W - drawW) / 2;
+      offsetY = (CANVAS_H - drawH) / 2;
+
+      drawBoard();
+    }
+
+    function cmToCanvasX(cmX) { return offsetX + cmX * scale; }
+    function cmToCanvasY(cmY) { return offsetY + cmY * scale; }
+
+    function drawBoard() {
+      ctx.clearRect(0, 0, CANVAS_W, CANVAS_H);
+      const lineWidthPx = Math.max(1, Math.round(1.6 * (CANVAS_W / 520)));
+
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(cmToCanvasX(PLAY_LEFT), cmToCanvasY(0), BOARD_W * scale, TOTAL_HEIGHT_CM * scale);
+
+      // house
+      ctx.beginPath(); ctx.arc(cmToCanvasX(HOUSE_CX), cmToCanvasY(HOUSE_CY), R4 * scale, 0, 2*Math.PI);
+      ctx.fillStyle = HOUSE_RED; ctx.fill();
+
+      ctx.beginPath(); ctx.arc(cmToCanvasX(HOUSE_CX), cmToCanvasY(HOUSE_CY), R3 * scale, 0, 2*Math.PI);
+      ctx.fillStyle = '#ffffff'; ctx.fill();
+
+      ctx.beginPath(); ctx.arc(cmToCanvasX(HOUSE_CX), cmToCanvasY(HOUSE_CY), R2 * scale, 0, 2*Math.PI);
+      ctx.fillStyle = HOUSE_BLUE; ctx.fill();
+
+      ctx.beginPath(); ctx.arc(cmToCanvasX(HOUSE_CX), cmToCanvasY(HOUSE_CY), R1 * scale, 0, 2*Math.PI);
+      ctx.fillStyle = '#ffffff'; ctx.fill();
+
+      ctx.strokeStyle = BLACK_LINE;
+      ctx.lineWidth = lineWidthPx;
+      [R1, R2, R3, R4].forEach(r => {
+        ctx.beginPath();
+        ctx.arc(cmToCanvasX(HOUSE_CX), cmToCanvasY(HOUSE_CY), r * scale, 0, 2*Math.PI);
+        ctx.stroke();
+      });
+
+      ctx.beginPath();
+      ctx.arc(cmToCanvasX(HOUSE_CX), cmToCanvasY(HOUSE_CY), lineWidthPx * 1.5, 0, 2*Math.PI);
+      ctx.fillStyle = BLACK_LINE; ctx.fill();
+
+      // center lines
+      ctx.strokeStyle = BLACK_LINE;
+      ctx.lineWidth = lineWidthPx;
+
+      ctx.beginPath();
+      ctx.moveTo(cmToCanvasX(PLAY_LEFT), cmToCanvasY(HOUSE_CY));
+      ctx.lineTo(cmToCanvasX(PLAY_RIGHT), cmToCanvasY(HOUSE_CY));
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(cmToCanvasX(HOUSE_CX), cmToCanvasY(0));
+      ctx.lineTo(cmToCanvasX(HOUSE_CX), cmToCanvasY(FULL_BOTTOM));
+      ctx.stroke();
+
+      // top black line
+      ctx.beginPath();
+      ctx.moveTo(cmToCanvasX(PLAY_LEFT), cmToCanvasY(PLAY_TOP));
+      ctx.lineTo(cmToCanvasX(PLAY_RIGHT), cmToCanvasY(PLAY_TOP));
+      ctx.stroke();
+
+      // red line
+      ctx.strokeStyle = RED_COLOR;
+      ctx.lineWidth = lineWidthPx;
+      ctx.beginPath();
+      ctx.moveTo(cmToCanvasX(PLAY_LEFT), cmToCanvasY(RED_LINE_Y));
+      ctx.lineTo(cmToCanvasX(PLAY_RIGHT), cmToCanvasY(RED_LINE_Y));
+      ctx.stroke();
+
+      // stones
+      const stoneRadiusPx = STONE_RADIUS_CM * scale;
+      const stoneOutline = Math.max(1, Math.round(1.6 * (CANVAS_W / 520)));
+      stones.forEach(stone => {
+        const cx = cmToCanvasX(stone.x);
+        const cy = cmToCanvasY(stone.y);
+        ctx.beginPath();
+        ctx.arc(cx, cy, stoneRadiusPx, 0, 2*Math.PI);
+        ctx.fillStyle = stone.color;
+        ctx.fill();
+        ctx.strokeStyle = BLACK_LINE;
+        ctx.lineWidth = stoneOutline;
+        ctx.stroke();
+      });
+
+      ctx.strokeStyle = '#e2e8f0';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(cmToCanvasX(PLAY_LEFT), cmToCanvasY(0), BOARD_W * scale, TOTAL_HEIGHT_CM * scale);
+    }
+
+    // dragging
+    let draggedStone = null;
+    let dragOffsetX = 0;
+    let dragOffsetY = 0;
+
+    function canvasToCmX(px) { return (px - offsetX) / scale; }
+    function canvasToCmY(px) { return (px - offsetY) / scale; }
+
+    function stoneAt(canvasX, canvasY) {
+      for (let i = stones.length - 1; i >= 0; i--) {
+        const stone = stones[i];
+        const cx = cmToCanvasX(stone.x);
+        const cy = cmToCanvasY(stone.y);
+        const dist = Math.hypot(canvasX - cx, canvasY - cy);
+        if (dist <= STONE_RADIUS_CM * scale) return stone;
+      }
+      return null;
+    }
+
+    function getCanvasCoords(e) {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      let clientX, clientY;
+      if (e.touches) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+      } else {
+        clientX = e.clientX;
+        clientY = e.clientY;
+      }
+      return {
+        x: (clientX - rect.left) * scaleX,
+        y: (clientY - rect.top) * scaleY
+      };
+    }
+
+    function onPointerDown(e) {
+      e.preventDefault();
+      const coords = getCanvasCoords(e);
+      const stone = stoneAt(coords.x, coords.y);
+      if (stone) {
+        draggedStone = stone;
+        dragOffsetX = cmToCanvasX(stone.x) - coords.x;
+        dragOffsetY = cmToCanvasY(stone.y) - coords.y;
+      }
+    }
+
+    function onPointerMove(e) {
+      if (!draggedStone) return;
+      e.preventDefault();
+      const coords = getCanvasCoords(e);
+      let newCmX = canvasToCmX(coords.x + dragOffsetX);
+      let newCmY = canvasToCmY(coords.y + dragOffsetY);
+
+      const minX = PLAY_LEFT + STONE_RADIUS_CM * 0.5;
+      const maxX = PLAY_RIGHT - STONE_RADIUS_CM * 0.5;
+      const minY = STONE_RADIUS_CM * 0.5;
+      const maxY = FULL_BOTTOM - STONE_RADIUS_CM * 0.5;
+
+      newCmX = Math.max(minX, Math.min(maxX, newCmX));
+      newCmY = Math.max(minY, Math.min(maxY, newCmY));
+
+      draggedStone.x = newCmX;
+      draggedStone.y = newCmY;
+      drawBoard();
+    }
+
+    function onPointerUp() { draggedStone = null; }
+
+    canvas.addEventListener('mousedown', onPointerDown);
+    canvas.addEventListener('mousemove', onPointerMove);
+    canvas.addEventListener('mouseup', onPointerUp);
+    canvas.addEventListener('mouseleave', onPointerUp);
+
+    canvas.addEventListener('touchstart', onPointerDown, { passive: false });
+    canvas.addEventListener('touchmove', onPointerMove, { passive: false });
+    canvas.addEventListener('touchend', onPointerUp);
+    canvas.addEventListener('touchcancel', onPointerUp);
+
+    // ==================== RESET ====================
+    function resetEverything() {
+      resetStonesToInitial();
+      redScores = new Array(TOTAL_COLUMNS).fill(null);
+      yellowScores = new Array(TOTAL_COLUMNS).fill(null);
+      hammerOwner = null;
+      selectedEnd = 0;
+      renderTableScores();
+      renderEndNav();
+      renderEditor();
+      renderHammer();
+      drawBoard();
+      showToast('Сброшено');
+    }
+
+    resetBtn.addEventListener('click', resetEverything);
+
+    // ==================== SHARE ====================
+    async function shareApp() {
+      const shareData = {
+        title: 'Виртуальная доска для керлинга',
+        text: 'Посмотри на эту виртуальную доску для керлинга! 🥌',
+        url: window.location.href
+      };
+
+      try {
+        if (navigator.share) {
+          await navigator.share(shareData);
+        } else if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(window.location.href);
+          showToast('Ссылка скопирована');
+        } else {
+          const tmp = document.createElement('input');
+          tmp.value = window.location.href;
+          document.body.appendChild(tmp);
+          tmp.select();
+          document.execCommand('copy');
+          document.body.removeChild(tmp);
+          showToast('Ссылка скопирована');
+        }
+      } catch (err) {
+        if (err && err.name === 'AbortError') return;
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(window.location.href);
+            showToast('Ссылка скопирована');
+          } else {
+            showToast('Не удалось поделиться');
+          }
+        } catch (e2) {
+          showToast('Не удалось поделиться');
+        }
+      }
+    }
+
+    shareBtn.addEventListener('click', shareApp);
+
+    // ==================== INIT ====================
+    renderTableScores();
+    renderEndNav();
+    renderEditor();
+    renderHammer();
+
+    resizeCanvas();
+    window.addEventListener('resize', () => { resizeCanvas(); });
+    window.addEventListener('orientationchange', () => { setTimeout(resizeCanvas, 120); });
+
+    if (window.ResizeObserver) {
+      const ro = new ResizeObserver(() => { resizeCanvas(); });
+      ro.observe(boardWrapper);
+    }
+
+    setTimeout(resizeCanvas, 30);
+  })();
+</script>
+</body>
+</html>
